@@ -22,6 +22,12 @@
             double result = result1 - result2;
             //вывод ответа на консоль
             Console.WriteLine("Итоговое значение равно: " + result);
+            {
+                if (c==pi)
+                { c = Math.PI;
+                    Console.WriteLine("Итоговое значение равно: " + result);
+                }
+                        }
            
 
 
