@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "PZ_03 (доп)": {
+      "commandName": "Project"
+    },
+    "WSL": {
+      "commandName": "WSL2",
+      "distributionName": ""
+    }
+  }
+}
