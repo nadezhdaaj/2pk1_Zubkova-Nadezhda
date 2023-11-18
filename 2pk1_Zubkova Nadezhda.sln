@@ -17,9 +17,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PZ_05", "PZ_05\PZ_05.csproj
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PZ_06", "PZ_06\PZ_06.csproj", "{3C09FFEC-62FE-4B36-8973-2B53280FF1A8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PZ_07", "PZ_07\PZ_07.csproj", "{2BB0A987-AF64-4E55-926C-41F0753C01DB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PZ_07", "PZ_07\PZ_07.csproj", "{2BB0A987-AF64-4E55-926C-41F0753C01DB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PZ_08", "PZ_08\PZ_08.csproj", "{6F875D40-6C43-4DB7-BD65-E193ED19E1B1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PZ_08", "PZ_08\PZ_08.csproj", "{6F875D40-6C43-4DB7-BD65-E193ED19E1B1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Задача для закрепления", "Задача для закрепления\Задача для закрепления.csproj", "{C6E4B617-279A-48B3-8269-C8C4A1D13D0E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -63,6 +65,10 @@ Global
 		{6F875D40-6C43-4DB7-BD65-E193ED19E1B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6F875D40-6C43-4DB7-BD65-E193ED19E1B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6F875D40-6C43-4DB7-BD65-E193ED19E1B1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C6E4B617-279A-48B3-8269-C8C4A1D13D0E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C6E4B617-279A-48B3-8269-C8C4A1D13D0E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C6E4B617-279A-48B3-8269-C8C4A1D13D0E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C6E4B617-279A-48B3-8269-C8C4A1D13D0E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
