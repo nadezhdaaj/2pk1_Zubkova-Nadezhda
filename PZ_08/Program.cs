@@ -106,7 +106,8 @@ namespace PZ_08
             }
             Console.WriteLine();
             Console.WriteLine("Вычисления округлены до 2 знаков после запятой");
-        }
+                Console.WriteLine();
+            }
         }
     }
 }
