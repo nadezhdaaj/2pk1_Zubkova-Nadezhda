@@ -54,9 +54,10 @@ namespace PZ_16
                 for (int j = 0; j < mapSize; j++)
                 {
                     if (j == mapSize - 1)
-                    {
+                    {    // устанавливает положение курсора
                         Console.SetCursorPosition(i, j); // Решение проблемы с гранцией карты(переставление курсора)
-                        map[i, j] = '_';
+                        map[i, j] = '_';   // Если текущая ячейка находится на границе карты (последний столбец),
+                                           // то устанавливается позиция курсора для перестановки курсора на новую строку
                     }
                     else
                     {
@@ -118,21 +119,21 @@ namespace PZ_16
                     switch (map[i, j]) // Окраска элементов
                     {
                         case 'E':
-                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.ForegroundColor = ConsoleColor.Yellow;
                             break;
                         case 'B':
-                            Console.ForegroundColor = ConsoleColor.Blue;
+                            Console.ForegroundColor = ConsoleColor.Red;
                             break;
                         case 'H':
-                            Console.ForegroundColor = ConsoleColor.Green;
+                            Console.ForegroundColor = ConsoleColor.Cyan;
                             break;
                         default:
-                            Console.ForegroundColor = ConsoleColor.White;
+                            Console.ForegroundColor = ConsoleColor.DarkMagenta;
                             break;
                     }
-
+                    // элемент выводится на консоль
                     Console.Write(map[i, j]);
-                    Console.ResetColor();
+                    Console.ResetColor();  // После вывода каждого элемента цвет сбрасывается обратно в цвет по умолчанию
                 }
                 Console.WriteLine();
             }
@@ -192,7 +193,7 @@ namespace PZ_16
                 // Обновленное положение игрока
                 map[playerY, playerX] = 'P';
                 Console.SetCursorPosition(playerY, playerX);
-                Console.ForegroundColor = ConsoleColor.Magenta; // Цвет игрока
+                Console.ForegroundColor = ConsoleColor.White; // Цвет игрока
                 Console.Write('P');
                 Console.ForegroundColor = ConsoleColor.White; // Цвет следа за игроком
                 Console.SetCursorPosition(0, mapSize);
@@ -341,12 +342,14 @@ namespace PZ_16
             do
             {
                 Console.Clear();
-                DisplayMenu();
+                DisplayMenu();  // отображение меню на экране 
+                                // считываем нажатую клавишу и сохраняем её
 
                 key = Console.ReadKey(true);
 
                 switch (key.Key)
-                {
+                {   // проверка нажатой клавиши 
+                {    // переменная selectedMenuItem уменьшается на 1 и затем увеличивается на 3, чтобы остаться в пределах от 0 до 2.
                     case ConsoleKey.UpArrow:
                         selectedMenuItem = (selectedMenuItem - 1 + 3) % 3;
                         break;
@@ -363,11 +366,11 @@ namespace PZ_16
         static void DisplayMenu() // Интерфейс
         {
             Centertext("THE GAME", centerY - 5);
-            Console.ForegroundColor = (selectedMenuItem == 0) ? ConsoleColor.Green : ConsoleColor.White; // Если равно, то зеленый. Нн равно - белый. 
+            Console.ForegroundColor = (selectedMenuItem == 0) ? ConsoleColor.Blue : ConsoleColor.White; // Если равно, то голубой Не равно - белый. 
             Centertext("1. Новая игра", centerY - 3);
-            Console.ForegroundColor = (selectedMenuItem == 1) ? ConsoleColor.Green : ConsoleColor.White;
+            Console.ForegroundColor = (selectedMenuItem == 1) ? ConsoleColor.Blue : ConsoleColor.White;
             Centertext("2. Загрузка", centerY - 1);
-            Console.ForegroundColor = (selectedMenuItem == 2) ? ConsoleColor.Green : ConsoleColor.White;
+            Console.ForegroundColor = (selectedMenuItem == 2) ? ConsoleColor.Blue : ConsoleColor.White;
             Centertext("3. Выход", centerY + 1);
             Console.ForegroundColor = ConsoleColor.White;
         }
