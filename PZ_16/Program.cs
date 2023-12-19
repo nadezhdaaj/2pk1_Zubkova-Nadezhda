@@ -1,8 +1,7 @@
-﻿using System.Threading.Channels;
+﻿using System;
 
 namespace PZ_16
 {
-
     internal class Program
     {
         // Параметры карты
@@ -33,7 +32,7 @@ namespace PZ_16
         static int centerX = (Console.WindowHeight / 2) - 15;
 
         //Сервисные переменные
-        static string lastAction = "Начало игры"; // Окошко информации
+        static List<string> lastAction = new List<string> { "Начало игры" }; // Окошко информации
         static bool bringbuff = false; // Поднятие баффа
         static int selectedMenuItem = 0; // Пункт меню
 
@@ -55,9 +54,9 @@ namespace PZ_16
                 for (int j = 0; j < mapSize; j++)
                 {
                     if (j == mapSize - 1)
-                    {   // устанавливает положение курсора
+                    {
                         Console.SetCursorPosition(i, j); // Решение проблемы с гранцией карты(переставление курсора)
-                        map[i, j] = '_';  // Если текущая ячейка находится на границе карты (последний столбец), то устанавливается позиция курсора для перестановки курсора на новую строку
+                        map[i, j] = '_';
                     }
                     else
                     {
@@ -72,11 +71,11 @@ namespace PZ_16
             int y;
 
             while (enemies > 0) // Добавление врагов
-            {   // рандомная генерация 
+            {
                 x = random.Next(0, mapSize);
                 y = random.Next(0, mapSize);
 
-                if (map[x, y] == '_')   // Если ячейка на этих координатах пуста , то в данную ячейку ставится символ врага ('E') и количество врагов уменьшается на 1
+                if (map[x, y] == '_')
                 {
                     map[x, y] = 'E';
                     enemies--;
@@ -84,11 +83,11 @@ namespace PZ_16
             }
 
             while (buffs > 0) // Добавление баффов
-            {   // рандомная генерация
+            {
                 x = random.Next(0, mapSize);
                 y = random.Next(0, mapSize);
 
-                if (map[x, y] == '_')   // Если ячейка на этих координатах пуста, то в нее ставится символ баффа ('B') и количество баффов уменьшается на 1
+                if (map[x, y] == '_')
                 {
                     map[x, y] = 'B';
                     buffs--;
@@ -96,11 +95,11 @@ namespace PZ_16
             }
 
             while (health > 0) // Добавление аптечек
-            {   // рандомная генерация
+            {
                 x = random.Next(0, mapSize);
                 y = random.Next(0, mapSize);
 
-                if (map[x, y] == '_')   // такм же образом добавляются аптечки
+                if (map[x, y] == '_')
                 {
                     map[x, y] = 'H';
                     health--;
@@ -108,122 +107,6 @@ namespace PZ_16
             }
             UpdateMap();
         }
-
-
-
-        static void Victory()
-        {
-            for (int i = 0; i < mapSize; i++) // Проверка на наличие врагов
-            {   // перебор элементов массива 
-                for (int j = 0; j < mapSize; j++)
-                {
-                    if (map[i, j] == 'E')
-                    {  // Если находится элемент 'E' функция завершается
-                        return;
-                    }
-                }
-            }
-
-            Console.Clear();
-            Centertext("Игра пройдена успешно :)", centerY);    // Если циклы завершаются без обнаружения врагов
-            Centertext("Сделано " + step + " шагов", centerY + 1);
-            Centertext("Нажмите Enter для выхода из игры", centerY + 2);
-
-            ConsoleKeyInfo keyInfo;
-            do
-            {           // Этот код считывает клавишу на клавиатуре, пока пользователь не нажмет “Enter”. Затем, он закрывает консоль
-                keyInfo = Console.ReadKey();
-            } while (keyInfo.Key != ConsoleKey.Enter);
-
-            Environment.Exit(0); // Выход
-        }
-
-        //BUFF, HEAL and FIGHT
-        static void BuffUp() // Логика баффов
-        {
-            if (map[playerX, playerY] == 'B') // Проверяет, находится ли игрок на клетке с баффом
-            {
-                bringbuff = true; //  Если игрок находится на клетке с баффом
-                stepsave = step; //Сохранение шага на котором взят бафф
-                plDMG = plDMG * 2; // Урон увеличивается в 2 раза
-                map[playerX, playerY] = '_'; // Решение проблемы "фантомного элемента" символ баффа на карте заменяется символом '_'
-                lastAction = "Поднят бафф                            ";
-            }
-            if (stepsave == step - 20) // Расчитан на 20 шагов
-            { // Если это условие выполняется, то бафф считается законченным
-                bringbuff = false;
-                plDMG = 10; // Возврат к изначальному урону
-                lastAction = "Бафф закончился";
-            }
-        }
-
-        static void Heal()
-        {
-            if (map[playerX, playerY] == 'H')
-            {
-                plHP = 50; // Лечение до максимума
-                map[playerX, playerY] = '_'; // Решение проблемы "фантомного элемента"
-                lastAction = "Вы подняли аптечку";
-            }
-        }
-        static void Fight()
-        {
-            if (map[playerX, playerY] == 'E') // Если встать на врага
-            {
-                while (plHP > 0 && enHP > 0) // Пока оба живы
-                {
-                    enHP = enHP - plDMG;    // два персонажа наносят урон друг другу до тех пор, пока здоровье одного из них не станет равным нулю или меньше
-                    plHP = plHP - enDMG;
-
-                    if (plHP <= 0) // Если здоровье игрока кончилось, экран проигрыша
-                    {
-                        lastAction = "Бой был проигран. Здоровье: 0";
-                        Console.Clear();
-                        Centertext("Игра окончена", centerY);
-                        Console.SetCursorPosition(centerX, centerY + 1);
-                        Console.WriteLine("Нажмите Enter для возвращения в меню");
-
-                        ConsoleKeyInfo keyInfo;
-                        do
-                        {   // после нажатия возвращение в меню
-                            keyInfo = Console.ReadKey();
-                        } while (keyInfo.Key != ConsoleKey.Enter);
-
-                        Menu(); // Выход в меню
-                    }
-
-                    if (enHP <= 0) // Если враг побежден, то игрок остается в ячейке
-                    { // здоровье игрока уменьшается 
-                      // вместо врага на карте появляется символ '_'
-                        map[playerX, playerY] = '_';
-                        Console.SetCursorPosition(playerY, playerX);
-                        Console.Write('_');
-                        Console.SetCursorPosition(playerY, playerX);
-                        Console.Write('P');
-                        lastAction = "Вы победили врага и потеряли " + (50 - plHP) + " HP   ";
-                    }
-                    else // Анимация боя
-                    {
-                        // Если ни одно из вышеперечисленных условий не выполняется, то происходит анимация боя.
-                        for (int i = 0; i < 3; i++) // Перебор символов анимации
-                        {   
-                            Console.SetCursorPosition(playerY, playerX);
-                            Console.Write('|');
-                            Thread.Sleep(60);
-                            Console.SetCursorPosition(playerY, playerX);
-                            Console.Write('/');
-                            Thread.Sleep(60);
-                            Console.SetCursorPosition(playerY, playerX);
-                            Console.Write('-');
-                            Thread.Sleep(60);
-                        }   // После этого символ игрока обновляется на '_'
-                        Console.Write('_');
-                    }
-                }
-                enHP = 30; // Возврат здоровья для следующего игрока
-            }
-        }
-
 
         static void UpdateMap()  // Отображение заполненной карты на консоли
         {
@@ -235,83 +118,24 @@ namespace PZ_16
                     switch (map[i, j]) // Окраска элементов
                     {
                         case 'E':
-                            Console.ForegroundColor = ConsoleColor.Yellow;
-                            break;
-                        case 'B':
                             Console.ForegroundColor = ConsoleColor.Red;
                             break;
+                        case 'B':
+                            Console.ForegroundColor = ConsoleColor.Blue;
+                            break;
                         case 'H':
-                            Console.ForegroundColor = ConsoleColor.Cyan;
+                            Console.ForegroundColor = ConsoleColor.Green;
                             break;
                         default:
-                            Console.ForegroundColor = ConsoleColor.DarkMagenta;
+                            Console.ForegroundColor = ConsoleColor.White;
                             break;
                     }
 
-                    Console.Write(map[i, j]);   // элемент выводится на консоль
-                    Console.ResetColor(); // После вывода каждого элемента цвет сбрасывается обратно в цвет по умолчанию 
+                    Console.Write(map[i, j]);
+                    Console.ResetColor();
                 }
                 Console.WriteLine();
             }
-        }
-        // MENU
-        static void Menu() // Управление стрелочками и основной вызов меню
-        {
-            ConsoleKeyInfo key;
-            do
-            {
-                Console.Clear();  // очищение экрана
-                DisplayMenu();      // отображение меню на экране 
-
-                key = Console.ReadKey(true);  // считываем нажатую клавишу и сохраняем её
-
-                switch (key.Key)  // проверка нажатой клавиши 
-                {    // переменная selectedMenuItem уменьшается на 1 и затем увеличивается на 3, чтобы остаться в пределах от 0 до 2.
-                    case ConsoleKey.UpArrow:
-                        selectedMenuItem = (selectedMenuItem - 1 + 3) % 3;
-                        break;
-                    case ConsoleKey.DownArrow:  // значение увеличивается на 1
-                        selectedMenuItem = (selectedMenuItem + 1) % 3;
-                        break;
-                    case ConsoleKey.Enter:
-                        HandleMenuSelection();  // обрабатывает выбор пользователя
-                        break;
-                }   // После обработки выбора пользователя, меню отображается снова
-            } while (key.Key != ConsoleKey.Enter);
-        }
-
-
-        static void DisplayMenu() // Интерфейс
-        {
-            Centertext("THE GAME", centerY - 5);
-            Console.ForegroundColor = (selectedMenuItem == 0) ? ConsoleColor.Blue : ConsoleColor.White; // Если равно, то голубой. Не равно - белый. 
-            Centertext("1. Начать новую игру", centerY - 3);
-            Console.ForegroundColor = (selectedMenuItem == 1) ? ConsoleColor.Blue : ConsoleColor.White;
-            Centertext("2. Загрузка", centerY - 1);
-            Console.ForegroundColor = (selectedMenuItem == 2) ? ConsoleColor.Blue : ConsoleColor.White;
-            Centertext("3. Выход", centerY + 1);
-            Console.ForegroundColor = ConsoleColor.White;
-        }
-
-        static void HandleMenuSelection() // Передача и открытие функций
-        {
-            Console.Clear();
-            switch (selectedMenuItem)
-            {
-                case 0:
-                    GenerationMap();
-                    break;
-                case 1:
-                    Console.WriteLine("Загрузка...");
-                    Loadgame();
-                    UpdateMap();
-                    break;
-                case 2:
-                    Console.WriteLine("Ждём вас в следующей игре!!!");
-                    Environment.Exit(0);
-                    break;
-            }
-            Console.ReadKey(true);
         }
 
         static void Move()
@@ -352,7 +176,7 @@ namespace PZ_16
                         return;
                 }
 
-                // Ограничение по границам карты
+                // Ограничение по краницам карты
                 if (playerX < 0) playerX = 0;
                 if (playerY < 0) playerY = 0;
                 if (playerX >= mapSize) playerX = mapSize - 1;
@@ -368,7 +192,7 @@ namespace PZ_16
                 // Обновленное положение игрока
                 map[playerY, playerX] = 'P';
                 Console.SetCursorPosition(playerY, playerX);
-                Console.ForegroundColor = ConsoleColor.White; // Цвет игрока
+                Console.ForegroundColor = ConsoleColor.Magenta; // Цвет игрока
                 Console.Write('P');
                 Console.ForegroundColor = ConsoleColor.White; // Цвет следа за игроком
                 Console.SetCursorPosition(0, mapSize);
@@ -389,8 +213,184 @@ namespace PZ_16
                 Console.WriteLine($"x = {x}, y = {y}" + "  ");
 
                 Console.SetCursorPosition(mapSize + 5, mapSize / 2);
-                Console.Write("Последнее действие: " + lastAction);
+
+                for (int i = 0; i < lastAction.Count; i++)
+                {
+                    Console.SetCursorPosition(mapSize + 5, mapSize / 2 + i);
+                    Console.Write("Последнее действие: " + lastAction[i]);
+                }
+
             }
+        }
+
+        static void Victory()
+        {
+            for (int i = 0; i < mapSize; i++) // Проверка на наличие врагов
+            {
+                for (int j = 0; j < mapSize; j++)
+                {
+                    if (map[i, j] == 'E')
+                    {
+                        return;
+                    }
+                }
+            }
+
+            Console.Clear();
+            Centertext("Игра пройдена", centerY);
+            Centertext("Вы сделали " + step + " шагов", centerY + 1);
+            Centertext("Нажмите Enter для выхода из игры", centerY + 2);
+
+            ConsoleKeyInfo keyInfo;
+            do
+            {
+                keyInfo = Console.ReadKey();
+            } while (keyInfo.Key != ConsoleKey.Enter);
+
+            Environment.Exit(0); // Выход
+        }
+
+        //BUFF, HEAL and FIGHT
+        static void BuffUp() // Логика баффов
+        {
+            if (map[playerX, playerY] == 'B')
+            {
+                bringbuff = true;
+                stepsave = step; //сохранение шага на котором взят бафф
+                plDMG = plDMG * 2;
+                map[playerX, playerY] = '_'; // Решение проблемы "фантомного элемента"
+                lastAction.Add("Поднят бафф                            ");
+            }
+            if (stepsave == step - 20) // Расчитан на 20 шагов
+            {
+                bringbuff = false;
+                plDMG = 10; // Возврат к изначальному урону
+                lastAction.Add("Бафф закончился                        ");
+            }
+        }
+
+        static void Heal()
+        {
+            if (map[playerX, playerY] == 'H')
+            {
+                plHP = 50; // Лечение до максимума
+                map[playerX, playerY] = '_'; // Решение проблемы "фантомного элемента"
+                lastAction.Add("Поднята аптечка                        ");
+            }
+        }
+        static void Fight()
+        {
+            if (map[playerX, playerY] == 'E') // Если встать на врага
+            {
+                while (plHP > 0 && enHP > 0) // Пока оба живы
+                {
+                    enHP = enHP - plDMG;
+                    plHP = plHP - enDMG;
+
+                    if (plHP <= 0) // Если здоровье игрока кончилось, экран проигрыша
+                    {
+                        lastAction.Add("Вы проиграли бой. Здоровье: 0");
+                        Console.Clear();
+                        Centertext("Игра окончена", centerY);
+                        Console.SetCursorPosition(centerX, centerY + 1);
+                        Console.WriteLine("Нажмите Enter для возвращения в меню");
+
+                        ConsoleKeyInfo keyInfo;
+                        do
+                        {
+                            keyInfo = Console.ReadKey();
+                        } while (keyInfo.Key != ConsoleKey.Enter);
+
+                        Menu(); // Выход в меню
+                    }
+
+                    if (enHP <= 0) // Если враг побежден, то игрок остается в ячейке
+                    {
+                        map[playerX, playerY] = '_';
+                        Console.SetCursorPosition(playerY, playerX);
+                        Console.Write('_');
+                        Console.SetCursorPosition(playerY, playerX);
+                        Console.Write('P');
+                        lastAction.Add("Вы победили врага и потеряли " + (50 - plHP) + " HP   ");
+                    }
+                    else // Анимация боя
+                    {
+                        for (int i = 0; i < 3; i++) // Перебор символов анимации
+                        {
+                            Console.SetCursorPosition(playerY, playerX);
+                            Console.Write('|');
+                            Thread.Sleep(60);
+                            Console.SetCursorPosition(playerY, playerX);
+                            Console.Write('/');
+                            Thread.Sleep(60);
+                            Console.SetCursorPosition(playerY, playerX);
+                            Console.Write('-');
+                            Thread.Sleep(60);
+                        }
+                        Console.Write('_');
+                    }
+                }
+                enHP = 30; // Возврат здоровья для следующего игрока
+            }
+        }
+
+        // MENU
+        static void Menu() // Управление стрелочками и основной вызов меню
+        {
+            ConsoleKeyInfo key;
+            do
+            {
+                Console.Clear();
+                DisplayMenu();
+
+                key = Console.ReadKey(true);
+
+                switch (key.Key)
+                {
+                    case ConsoleKey.UpArrow:
+                        selectedMenuItem = (selectedMenuItem - 1 + 3) % 3;
+                        break;
+                    case ConsoleKey.DownArrow:
+                        selectedMenuItem = (selectedMenuItem + 1) % 3;
+                        break;
+                    case ConsoleKey.Enter:
+                        HandleMenuSelection();
+                        break;
+                }
+            } while (key.Key != ConsoleKey.Enter);
+        }
+
+        static void DisplayMenu() // Интерфейс
+        {
+            Centertext("THE GAME", centerY - 5);
+            Console.ForegroundColor = (selectedMenuItem == 0) ? ConsoleColor.Green : ConsoleColor.White; // Если равно, то зеленый. Нн равно - белый. 
+            Centertext("1. Новая игра", centerY - 3);
+            Console.ForegroundColor = (selectedMenuItem == 1) ? ConsoleColor.Green : ConsoleColor.White;
+            Centertext("2. Загрузка", centerY - 1);
+            Console.ForegroundColor = (selectedMenuItem == 2) ? ConsoleColor.Green : ConsoleColor.White;
+            Centertext("3. Выход", centerY + 1);
+            Console.ForegroundColor = ConsoleColor.White;
+        }
+
+        static void HandleMenuSelection() // Передача и открытие функций
+        {
+            Console.Clear();
+            switch (selectedMenuItem)
+            {
+                case 0:
+                    GenerationMap();
+                    break;
+                case 1:
+                    Console.WriteLine("Выполняется загрузка...");
+                    Loadgame();
+                    UpdateMap();
+                    break;
+                case 2:
+                    Console.WriteLine("До следующей игры!");
+                    Environment.Exit(0);
+                    break;
+            }
+            Console.ReadKey(true);
         }
 
         // SERVICE
@@ -413,22 +413,22 @@ namespace PZ_16
             string path = "save.txt"; // Создание текстового файла
             using (StreamWriter writer = new StreamWriter(path)) // Запись в него параметров
             {
-                writer.WriteLine($"playerX={playerX}"); // координаты игрока
-                writer.WriteLine($"playerY={playerY}"); // координаты игрока
-                writer.WriteLine($"playerHP={plHP}");   // здоровье игрока
-                writer.WriteLine($"playerStrong={plDMG}");  // сила атаки игрока
-                writer.WriteLine($"playerStepCount={step}");    // количество сделанных игроком шагов
-                writer.WriteLine($"enemyHP={enHP}");    // здоровье врага
-                writer.WriteLine($"hasBuff={bringbuff}");   // наличие баффа 
-                writer.WriteLine($"buffStep={stepsave}");   // количество сделанных с шагов с баффом 
+                writer.WriteLine($"playerX={playerX}");
+                writer.WriteLine($"playerY={playerY}");
+                writer.WriteLine($"playerHP={plHP}");
+                writer.WriteLine($"playerStrong={plDMG}");
+                writer.WriteLine($"playerStepCount={step}");
+                writer.WriteLine($"enemyHP={enHP}");
+                writer.WriteLine($"hasBuff={bringbuff}");
+                writer.WriteLine($"buffStep={stepsave}");
 
                 for (int i = 0; i < mapSize; i++) // Запись карты
                 {
-                    for (int j = 0; j < mapSize; j++)   // Перебор элементов в массиве map и запись их в файл
+                    for (int j = 0; j < mapSize; j++)
                     {
                         if (map[i, j] == 'P')
-                        {                         //  Если элемент равен символу 'P', то он заменяется на символ '_', перед записью в файл. 
-                            map[i, j] = '_';        //  С целью скрыть позицию игрока в сохранении, чтобы не было возможности изменить его позицию напрямую в файле.
+                        {
+                            map[i, j] = '_';
                         }
                         writer.Write(map[i, j]);
                     }
@@ -436,66 +436,66 @@ namespace PZ_16
                 }
             }
         }
-        
-            static void Loadgame() // Загрузка
+
+        static void Loadgame() // Загрузка
+        {
+            string path = "save.txt"; // Путь
+
+            if (File.Exists(path)) // Если существует
             {
-                string path = "save.txt"; // Определяем путь
+                string[] lines = File.ReadAllLines(path); // Передача файлов с документа в игру
 
-                if (File.Exists(path)) // Если существует
+                if (lines.Length >= mapSize)
                 {
-                    string[] lines = File.ReadAllLines(path); // Передача файлов с документа в игру
-
-                    if (lines.Length >= mapSize)    // Проверка, что количество строк в файле сохранения достаточно для загрузки игры 
-                {       // Если проверка проходит, то происходит парсинг строк файла сохранения и присваивание значений переменным
                     if (int.TryParse(lines[0].Split('=')[1], out int loadedPlayerX) &&
-                        int.TryParse(lines[1].Split('=')[1], out int loadedPlayerY) &&
-                        int.TryParse(lines[2].Split('=')[1], out int loadedPlayerHP) &&
-                        int.TryParse(lines[3].Split('=')[1], out int loadedPlayerStrong) &&
-                        int.TryParse(lines[4].Split('=')[1], out int loadedPlayerStepCount) &&
-                        int.TryParse(lines[5].Split('=')[1], out int loadedEnemyHP) &&
-                        bool.TryParse(lines[6].Split('=')[1], out bool loadedHasBuff) &&
-                        int.TryParse(lines[7].Split('=')[1], out int loadedBuffStep))
-                        {
-                            playerX = loadedPlayerX;
-                            playerY = loadedPlayerY;
-                            plHP = loadedPlayerHP;
-                            plDMG = loadedPlayerStrong;
-                            step = loadedPlayerStepCount;
-                            stepsave = loadedBuffStep;
-                            enHP = loadedEnemyHP;
-                            bringbuff = loadedHasBuff;
-                        // Инициализация игрового поля и заполнение его значениями из файла сохранения
-                        for (int i = 0; i < mapSize; i++)
-                            {
-                                for (int j = 0; j < mapSize; j++)
-                                {
-                                    map[i, j] = '_';
-                                }
-                            }
-
-                            for (int i = 0; i < mapSize; i++)
-                            {
-                                for (int j = 0; j < mapSize; j++)
-                                {
-                                    map[i, j] = lines[i + 8][j];
-                                }
-                            }
-                        // Координаты игрока обозначаются символом 'P'
-                        map[playerX, playerY] = 'P'; 
-
-                            Console.Clear();
-                            UpdateMap(); //Вывод на консоль
-                        }
-                    }
-                    else
+                    int.TryParse(lines[1].Split('=')[1], out int loadedPlayerY) &&
+                    int.TryParse(lines[2].Split('=')[1], out int loadedPlayerHP) &&
+                    int.TryParse(lines[3].Split('=')[1], out int loadedPlayerStrong) &&
+                    int.TryParse(lines[4].Split('=')[1], out int loadedPlayerStepCount) &&
+                    int.TryParse(lines[5].Split('=')[1], out int loadedEnemyHP) &&
+                    bool.TryParse(lines[6].Split('=')[1], out bool loadedHasBuff) &&
+                    int.TryParse(lines[7].Split('=')[1], out int loadedBuffStep))
                     {
-                        Console.WriteLine("Ошибка при чтении файла сохранения.");
+                        playerX = loadedPlayerX;
+                        playerY = loadedPlayerY;
+                        plHP = loadedPlayerHP;
+                        plDMG = loadedPlayerStrong;
+                        step = loadedPlayerStepCount;
+                        stepsave = loadedBuffStep;
+                        enHP = loadedEnemyHP;
+                        bringbuff = loadedHasBuff;
+
+                        for (int i = 0; i < mapSize; i++)
+                        {
+                            for (int j = 0; j < mapSize; j++)
+                            {
+                                map[i, j] = '_';
+                            }
+                        }
+
+                        for (int i = 0; i < mapSize; i++)
+                        {
+                            for (int j = 0; j < mapSize; j++)
+                            {
+                                map[i, j] = lines[i + 8][j];
+                            }
+                        }
+
+                        map[playerX, playerY] = 'P';
+
+                        Console.Clear();
+                        UpdateMap(); //Вывод на консоль
                     }
                 }
                 else
                 {
-                    Console.WriteLine("К сожалению, файл сохранения не найден.");
+                    Console.WriteLine("Ошибка чтения файла сохранения.");
                 }
+            }
+            else
+            {
+                Console.WriteLine("Файл сохранения не найден.");
             }
         }
     }
+}
