@@ -348,7 +348,7 @@ namespace PZ_16
                 key = Console.ReadKey(true);
 
                 switch (key.Key)
-                {   // проверка нажатой клавиши 
+                // проверка нажатой клавиши 
                 {    // переменная selectedMenuItem уменьшается на 1 и затем увеличивается на 3, чтобы остаться в пределах от 0 до 2.
                     case ConsoleKey.UpArrow:
                         selectedMenuItem = (selectedMenuItem - 1 + 3) % 3;
