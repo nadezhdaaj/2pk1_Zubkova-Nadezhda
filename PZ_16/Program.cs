@@ -32,7 +32,7 @@ namespace PZ_16
         static int centerX = (Console.WindowHeight / 2) - 15;
 
         //Сервисные переменные
-        static List<string> lastAction = new List<string> { "Начало игры" }; // Окошко информации
+        static List<string> lastAction = new List<string> { "Начало игры" }; // Окошко информации / список, который дополняется
         static bool bringbuff = false; // Поднятие баффа
         static int selectedMenuItem = 0; // Пункт меню
 
