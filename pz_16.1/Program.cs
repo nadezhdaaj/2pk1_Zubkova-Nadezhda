@@ -418,7 +418,7 @@ namespace PZ_16
             using (StreamWriter writer = new StreamWriter(path)) // Запись в него параметров
             {
                 writer.WriteLine($"playerX={playerX}");  // координаты игрока
-                writer.WriteLine($"playerY={playerY}"); 
+                writer.WriteLine($"playerY={playerY}");
                 writer.WriteLine($"playerHP={plHP}");    // здоровье игрока
                 writer.WriteLine($"playerStrong={plDMG}");  // сила атаки игрока
                 writer.WriteLine($"playerStepCount={step}");    // количество сделанных игроком шагов
