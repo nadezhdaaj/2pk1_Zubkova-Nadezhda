@@ -470,6 +470,7 @@ namespace PZ_16
                         stepsave = loadedBuffStep;
                         enHP = loadedEnemyHP;
                         bringbuff = loadedHasBuff;
+                        
                         // Инициализация игрового поля и заполнение его значениями из файла сохранения
                         for (int i = 0; i < mapSize; i++)
                         {

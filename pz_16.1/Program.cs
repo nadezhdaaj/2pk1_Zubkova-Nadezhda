@@ -179,8 +179,8 @@ namespace PZ_16
                 }
 
                 // Ограничение по краницам карты
-                if (playerX < 0) playerX = 0;
-                if (playerY < 0) playerY = 0;
+                if (playerX < 1) playerX = 1;
+                if (playerY < 1) playerY = 1;
                 if (playerX >= mapSize) playerX = mapSize - 1;
                 if (playerY >= mapSize) playerY = mapSize - 1;
 
