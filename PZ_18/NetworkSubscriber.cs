@@ -4,97 +4,95 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace PZ_18
 {
-    // Перечисление, описывающее типы тарифов
-    enum TypeOfTariff { Maxi, Standart, Economy }
-
-    // Класс, представляющий абонента сети связи
-    internal class NetworkSubscriber
+    public enum TypeOfTariff
     {
-        // Поля класса
-        string _name; // ФИО абонента
-        int _minute; // продолжительность разговора в минутах
-        int _gb; // количество ГБ интернет-трафика
+        Maxi, // Максимальный тариф
+        Standart,// Стандартный тариф
+        Economy // Экономичный тариф
+    }
 
-        // Минимальное количество минут для каждого тарифа
-        int _minMaxi = 1000;
-        int _minStandart = 500;
-        int _minEconomy = 300;
-
-        // Базовое количество ГБ для каждого тарифа
-        int _gbMaxi = 50;
-        int _gbStandart = 30;
-        int _gbEconomy = 10;
-
-        // Статические поля - количество абонентов для каждого тарифа
-        public static int countOfMaxi = 0;
+    internal class NetworkSubscriber
+    {
+        // Счетчики абонентов на различных тарифах
+        public static int countOfMaxi = 0;
         public static int countOfStandart = 0;
         public static int countOfEconomy = 0;
 
-        // Свойство типа тарифа
-        public TypeOfTariff Type { get; set; }
-
-        // Свойство ФИО абонента с проверкой на пустую строку
-        public string Name
+        private string fullName; // ФИО
+        public string FullName
         {
-            get => _name;
+            get => fullName;
             set
             {
-                if (value == "")
+                if (value == "") // Если введена пустая строка
                 {
-                    Console.WriteLine("Введена пустая строка. Введите ФИО");
-                    _name = Console.ReadLine();
+                    Console.WriteLine("Введена пустая строка. Введите ФИО"); 
+                    fullName = Console.ReadLine();
                 }
                 else
                 {
-                    _name = value;
+                    fullName = value;
                 }
             }
         }
 
-        // Переопределение метода ToString для получения информации об абоненте в виде строки
-        public override string ToString()
+        public TypeOfTariff Tariff { get; set; } // Тариф абонента
+
+        // Остаток минут и Гб на тарифе
+        public int RemainingMinutes { get; private set; }
+        public int RemainingGB { get; private set; }
+
+        public NetworkSubscriber(string fullName, TypeOfTariff tariff)
         {
-            return $"{Name}\n" +
-            $"Тип тарифа: {(Type == TypeOfTariff.Maxi ? "Макси" : Type == TypeOfTariff.Standart ? "Стандарт" : "Экономный")}\n";
+            FullName = fullName;
+            Tariff = tariff;
+
+            switch (tariff) // Установка остатка минут и Гб в зависимости от выбранного тарифа
+            {
+                case TypeOfTariff.Maxi:
+                    RemainingMinutes = 1000;
+                    RemainingGB = 50;
+                    countOfMaxi++;
+                    break;
+                case TypeOfTariff.Standart:
+                    RemainingMinutes = 500;
+                    RemainingGB = 30;
+                    countOfStandart++;
+                    break;
+                case TypeOfTariff.Economy:
+                    RemainingMinutes = 300;
+                    RemainingGB = 10;
+                    countOfEconomy++;
+                    break;
+            }
         }
 
-        // Конструктор класса, принимающий ФИО и тип тарифа
-        public NetworkSubscriber(string name, TypeOfTariff type)
+        public void MakeCall(int duration, int remainingMinutes) // Метод для подсчета минут
         {
-            Name = name;
-            Type = type;
-
-            if (type == TypeOfTariff.Maxi) countOfMaxi++;
-            else if (type == TypeOfTariff.Standart) countOfStandart++;
-            else countOfEconomy++;
+            RemainingMinutes -= duration;
+            Console.WriteLine($"\nАбонент: {FullName} совершила звонок продолжительностью {duration} мин, остаток минут {RemainingMinutes}");
         }
 
-        // Конструктор 
-        public NetworkSubscriber()
+        public void SendGB(int amount, int remainingGB) // Метод для подсчета гигабайтов
         {
-            countOfMaxi++;
-            countOfStandart++;
-            countOfEconomy++;
+            RemainingGB -= amount;
+            Console.WriteLine($"Абонент: {FullName} передала информацию в объеме {amount} Гб, остаток тарифа: {RemainingGB} Гб");
+
+        }
+        public override string ToString()
+        {
+            return $"Абонент: {FullName}, Тариф: {Tariff}";
         }
 
-        // Метод для имитации звонка, уменьшающий количество доступных минут
-        public void MakeCall(int duration, TypeOfTariff type)
+        public static void PrintSubscribersCount() // Статический метод для вывода количества абонентов на каждом тарифе
         {
-            if (type == TypeOfTariff.Maxi) duration = _minMaxi - _minute;
-            else if (type == TypeOfTariff.Standart) duration = _minStandart - _minute;
-            else duration = _minEconomy - _minute;
-            Console.WriteLine($"Aбонент {Name} совершил звонок продолжительность {_minute} мин, остаток минут {duration}");
-        }
-
-        // Метод для им. передачи данных, уменьшающий количество доступных ГБ трафика
-        public void SendGB(int remainingGB, TypeOfTariff type)
-        {
-            if (type == TypeOfTariff.Maxi) remainingGB = _gbMaxi - _gb;
-            else if (type == TypeOfTariff.Standart) remainingGB = _gbStandart - _gb;
-            else remainingGB = _gbEconomy - _gb;
-            Console.WriteLine($"Aбонент {Name} отправил данные объемом {_gb} ГБ, остаток тарифа: {remainingGB} ГБ");
+            Console.WriteLine($"\nКоличество абонентов на тарифе Maxi: {countOfMaxi}\n" +
+                              $"Количество абонентов на тарифе Standart: {countOfStandart}\n" +
+                              $"Количество абонентов на тарифе Economy: {countOfEconomy}");
         }
     }
+}
